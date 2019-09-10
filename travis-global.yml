@@ -1,0 +1,90 @@
+dist: xenial
+language: python
+services:
+  - mongodb
+  - xvfb
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - qtbase5-dev
+
+env:
+  global:
+    - MPLBACKEND: Qt5Agg
+    - BS_PROFILE: collection
+    - TEST_PROFILE: default
+    - BS_ENV_VERSION: 2019C3.0.1
+  matrix:
+    - _CONDA_CHANNEL=lightsource2-tag OPHYD_CONTROL_LAYER=pyepics
+    - _CONDA_CHANNEL=nsls2forge OPHYD_CONTROL_LAYER=pyepics
+    - _CONDA_CHANNEL=lightsource2-tag OPHYD_CONTROL_LAYER=caproto
+    - _CONDA_CHANNEL=nsls2forge OPHYD_CONTROL_LAYER=caproto
+
+os:
+  - linux
+python:
+  - 3.6
+  - 3.7
+
+matrix:
+  fast_finish: true
+
+before_install:
+  ##### Common steps #####
+  # Get and install miniconda first:
+  - wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - sh ./miniconda.sh -b -p ~/mc
+  - source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
+  - conda update conda --yes
+  - pwd
+  - ls -laF
+  # pyOlog config:
+  - cp -v pyOlog-test.conf ~/pyOlog.conf
+  - cat ~/pyOlog.conf
+
+  # Databroker config:
+  - mkdir -v -p ~/.config/databroker/
+  - cp -v databroker.yml ~/.config/databroker/$(echo $TRAVIS_REPO_SLUG | awk -F'[-/]' '{print tolower($3)}').yml
+
+  # We will be running a default profile without copying the startup/*.py files
+  # into it; the startup files will be executed by explicit commands. But to
+  # satisfy the automatic resolution of the data/config files, we will have
+  # to copy them into the $TEST_PROFILE profile dir.
+  - mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
+
+  ##### Beamline-specific steps #####
+  - |
+    if [ -f .travis-local.sh ]; then
+        bash .travis-local.sh
+    fi
+
+install:
+  - env | sort -u
+  - conda create -y -n ${BS_PROFILE}-${BS_ENV_VERSION} -c ${_CONDA_CHANNEL} ${BS_PROFILE}=${BS_ENV_VERSION} python=${TRAVIS_PYTHON_VERSION}
+  - conda activate ${BS_PROFILE}-${BS_ENV_VERSION}
+  - conda list
+  - conda info
+  - conda env list
+  - echo -e "\n" | caproto-spoof-beamline &
+  # Same reason as in https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15:
+  - ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
+
+script:
+  - |
+    if [ "$OPHYD_CONTROL_LAYER" == "pyepics" ]; then
+        connection_timeout='
+    import ophyd
+    import functools
+    ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection, timeout=20)
+    print(ophyd.signal.EpicsSignalBase.wait_for_connection.__dict__)'
+    fi
+    command="${connection_timeout}
+    import glob
+    ip = get_ipython()
+    for f in sorted(glob.glob('startup/*.py')):
+        print(f'Executing {f} in TravisCI')
+        ip.parent._exec_file(f)"
+  - echo "$command"
+  - EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
