@@ -53,11 +53,10 @@ jobs:
   # Get pyOlog and databroker configs; prepare a profile dir
   - script: |
       set -e
-      cp -v .ci/pyOlog-test.conf ~/pyOlog.conf
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/pyOlog.conf --output-file=~/pyOlog.conf
 
       mkdir -v -p ~/.config/databroker/
-      # cp -v .ci/databroker.yml ~/.config/databroker/$(git config --get remote.origin.url | awk -F'[/-]' '{print tolower($6)}').yml
-      cp -v .ci/databroker.yml ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
 
       mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
     displayName: "* get pyOlog and databroker configs; prepare a profile dir"
@@ -67,6 +66,7 @@ jobs:
   - script: |
       set -e
       if [ -f .ci/bl-specific.sh ]; then
+          cat .ci/bl-specific.sh
           bash .ci/bl-specific.sh
       fi
     displayName: "* perform beamline-specific actions"
