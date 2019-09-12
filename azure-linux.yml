@@ -47,7 +47,7 @@ jobs:
 
   # Check the env
   - script: env | sort -u
-    displayName: * check the env
+    displayName: "* check the env"
     condition: succeeded()
 
   # Get pyOlog and databroker configs; prepare a profile dir
@@ -60,7 +60,7 @@ jobs:
       cp -v .ci/databroker.yml ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
 
       mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
-    displayName: * get pyOlog and databroker configs; prepare a profile dir
+    displayName: "* get pyOlog and databroker configs; prepare a profile dir"
     condition: succeeded()
 
   # Perform beamline-specific actions
@@ -69,19 +69,19 @@ jobs:
       if [ -f .ci/bl-specific.sh ]; then
           bash .ci/bl-specific.sh
       fi
-    displayName: * perform beamline-specific actions
+    displayName: "* perform beamline-specific actions"
     condition: succeeded()
 
   # Install required packages
   - script: |
       sudo apt-get install mongodb xvfb qtbase5-dev
-    displayName: * install required packages
+    displayName: "* install required packages"
     condition: succeeded()
 
   # Start mongodb
   - script: |
       sudo systemctl start mongodb && sudo systemctl status mongodb
-    displayName: * start mongodb
+    displayName: "* start mongodb"
     condition: succeeded()
 
   # Download and install miniconda
@@ -91,7 +91,7 @@ jobs:
       sh ./miniconda.sh -b -p ~/mc
       source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
       conda update conda --yes
-    displayName: * download and install miniconda
+    displayName: "* download and install miniconda"
     condition: succeeded()
 
   # Create conda env
@@ -99,7 +99,7 @@ jobs:
       set -e
       conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${CONDA_CHANNEL_NAME} ${BS_PROFILE}=${BS_ENV_VERSION} python=${PYTHON_VERSION}
       conda env list
-    displayName: * create test conda env
+    displayName: "* create test conda env"
     condition: succeeded()
 
   # Start caproto IOC and start IPython with startup files
@@ -148,5 +148,5 @@ jobs:
       # "--profile=<profile-name>"), but rather load an empty test profile:
       EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
 
-    displayName: * start caproto IOC and start IPython with startup files
+    displayName: "* start caproto IOC and start IPython with startup files"
     condition: succeeded()
