@@ -73,10 +73,10 @@ jobs:
   # pyOlog and databroker configs; prepare a profile dir:
   - script: |
       set -e
-      cp -v pyOlog-test.conf ~/pyOlog.conf
+      cp -v .ci/pyOlog-test.conf ~/pyOlog.conf
 
       mkdir -v -p ~/.config/databroker/
-      cp -v databroker.yml ~/.config/databroker/$(git config --get remote.origin.url | awk -F'[/-]' '{print tolower($6)}').yml
+      cp -v .ci/databroker.yml ~/.config/databroker/$(git config --get remote.origin.url | awk -F'[/-]' '{print tolower($6)}').yml
 
       mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
     displayName: copy pyOlog and databroker configs; prepare a profile dir
@@ -86,8 +86,8 @@ jobs:
 
   - script: |
       set -e
-      if [ -f .travis-local.sh ]; then
-          bash .travis-local.sh
+      if [ -f .ci/bl-specific.sh ]; then
+          bash .ci/bl-specific.sh
       fi
     displayName: perform beamline-specific actions
     condition: succeeded()
