@@ -53,10 +53,10 @@ jobs:
   # Get pyOlog and databroker configs; prepare a profile dir
   - script: |
       set -e
-      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/pyOlog.conf --output-file=~/pyOlog.conf
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/pyOlog.conf -O ~/pyOlog.conf
 
       mkdir -v -p ~/.config/databroker/
-      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml -O ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
 
       mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
     displayName: "* get pyOlog and databroker configs; prepare a profile dir"
