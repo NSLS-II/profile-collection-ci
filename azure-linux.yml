@@ -45,32 +45,12 @@ jobs:
 
   steps:
 
+  # Check the env
   - script: env | sort -u
-    displayName: check the env
+    displayName: * check the env
     condition: succeeded()
 
-  - script: |
-      sudo apt-get install mongodb xvfb qtbase5-dev
-    displayName: install required packages
-    condition: succeeded()
-
-  - script: |
-      sudo systemctl start mongodb && sudo systemctl status mongodb
-    displayName: start mongodb
-    condition: succeeded()
-
-  # Common steps:
-
-  - script: |
-      set -e
-      wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-      sh ./miniconda.sh -b -p ~/mc
-      source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
-      conda update conda --yes
-    displayName: download and install miniconda
-    condition: succeeded()
-
-  # pyOlog and databroker configs; prepare a profile dir:
+  # Get pyOlog and databroker configs; prepare a profile dir
   - script: |
       set -e
       cp -v .ci/pyOlog-test.conf ~/pyOlog.conf
@@ -80,27 +60,49 @@ jobs:
       cp -v .ci/databroker.yml ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
 
       mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
-    displayName: copy pyOlog and databroker configs; prepare a profile dir
+    displayName: * get pyOlog and databroker configs; prepare a profile dir
     condition: succeeded()
 
-  # Beamline-specific step:
-
+  # Perform beamline-specific actions
   - script: |
       set -e
       if [ -f .ci/bl-specific.sh ]; then
           bash .ci/bl-specific.sh
       fi
-    displayName: perform beamline-specific actions
+    displayName: * perform beamline-specific actions
     condition: succeeded()
 
-  # Create conda env:
+  # Install required packages
+  - script: |
+      sudo apt-get install mongodb xvfb qtbase5-dev
+    displayName: * install required packages
+    condition: succeeded()
+
+  # Start mongodb
+  - script: |
+      sudo systemctl start mongodb && sudo systemctl status mongodb
+    displayName: * start mongodb
+    condition: succeeded()
+
+  # Download and install miniconda
+  - script: |
+      set -e
+      wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      sh ./miniconda.sh -b -p ~/mc
+      source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
+      conda update conda --yes
+    displayName: * download and install miniconda
+    condition: succeeded()
+
+  # Create conda env
   - script: |
       set -e
       conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${CONDA_CHANNEL_NAME} ${BS_PROFILE}=${BS_ENV_VERSION} python=${PYTHON_VERSION}
       conda env list
-    displayName: create test conda env
+    displayName: * create test conda env
     condition: succeeded()
 
+  # Start caproto IOC and start IPython with startup files
   - script: |
       set -e
       # Start Xvfb
@@ -146,5 +148,5 @@ jobs:
       # "--profile=<profile-name>"), but rather load an empty test profile:
       EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
 
-    displayName: start caproto IOC and start IPython with startup files
+    displayName: * start caproto IOC and start IPython with startup files
     condition: succeeded()
