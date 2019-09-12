@@ -77,7 +77,7 @@ jobs:
 
       mkdir -v -p ~/.config/databroker/
       # cp -v .ci/databroker.yml ~/.config/databroker/$(git config --get remote.origin.url | awk -F'[/-]' '{print tolower($6)}').yml
-      cp -v .ci/databroker.yml ~/.config/databroker/${{ parameters.beamline_acronym }}.yml
+      cp -v .ci/databroker.yml ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
 
       mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
     displayName: copy pyOlog and databroker configs; prepare a profile dir
