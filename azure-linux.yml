@@ -62,16 +62,6 @@ jobs:
     displayName: "* get pyOlog and databroker configs; prepare a profile dir"
     condition: succeeded()
 
-  # Perform beamline-specific actions
-  - script: |
-      set -e
-      if [ -f .ci/bl-specific.sh ]; then
-          cat .ci/bl-specific.sh
-          bash .ci/bl-specific.sh
-      fi
-    displayName: "* perform beamline-specific actions"
-    condition: succeeded()
-
   # Install required packages
   - script: |
       sudo apt-get install mongodb xvfb qtbase5-dev
@@ -100,6 +90,18 @@ jobs:
       conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${CONDA_CHANNEL_NAME} ${BS_PROFILE}=${BS_ENV_VERSION} python=${PYTHON_VERSION}
       conda env list
     displayName: "* create test conda env"
+    condition: succeeded()
+
+  # Perform beamline-specific actions
+  - script: |
+      set -e
+      source ~/mc/etc/profile.d/conda.sh
+      conda activate ${BS_PROFILE}-${BS_ENV_VERSION}
+      if [ -f .ci/bl-specific.sh ]; then
+          cat .ci/bl-specific.sh
+          bash .ci/bl-specific.sh
+      fi
+    displayName: "* perform beamline-specific actions"
     condition: succeeded()
 
   # Start caproto IOC and start IPython with startup files
