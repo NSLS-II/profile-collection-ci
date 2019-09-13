@@ -50,6 +50,15 @@ jobs:
     displayName: "* check the env"
     condition: succeeded()
 
+  # Check the startup/ dir exists
+  - script: |
+      if [ ! -d "startup/" ]; then
+          echo "No startup/ dir found in $PWD"
+          exit 9
+      fi
+    displayName: "* check the startup/ dir exists"
+    condition: succeeded()
+
   # Get pyOlog and databroker configs; prepare a profile dir
   - script: |
       set -e
