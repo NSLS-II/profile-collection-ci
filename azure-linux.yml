@@ -137,9 +137,13 @@ jobs:
 
       # This is what IPython does internally to load the startup files:
       command="${connection_timeout}
+      import os
       import glob
       ip = get_ipython()
-      for f in sorted(glob.glob('startup/*.py')):
+      startup_files = sorted(glob.glob('startup/*.py'))
+      if not startup_files:
+          raise SystemExit(f'Cannot find any startup files in {os.getcwd()}')
+      for f in startup_files:
           print(f'Executing {f} in CI')
           ip.parent._exec_file(f)"
 
