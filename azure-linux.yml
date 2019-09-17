@@ -5,6 +5,7 @@ jobs:
   variables:
     MPLBACKEND: Qt5Agg
     TEST_PROFILE: test
+    OPHYD_TIMEOUT: 60
     BS_PROFILE: collection
     BS_ENV_VERSION: 2019C3.0.1
 
@@ -143,7 +144,8 @@ jobs:
           connection_timeout='
       import ophyd
       import functools
-      ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection, timeout=20)
+      ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection,
+                                                                                 timeout=$OPHYD_TIMEOUT)
       print(ophyd.signal.EpicsSignalBase.wait_for_connection.__dict__)'
       fi
 
