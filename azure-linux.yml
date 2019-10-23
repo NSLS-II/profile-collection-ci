@@ -45,6 +45,20 @@ jobs:
         PYTHON_VERSION: 3.7
 
   steps:
+  
+  # Security check
+  - script: |
+      set -e
+      for keyword in password passwd secret token; do
+          if [ ! -z "$(grep -r $keyword *)" ]; then
+              echo "Found something that looks like a password/secret"
+              exit 1
+          else
+              echo "All clear"
+          fi
+      done
+    displayName: "* security check"
+    condition: succeeded()
 
   # Check the env
   - script: env | sort -u
