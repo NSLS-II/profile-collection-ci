@@ -81,7 +81,7 @@ jobs:
 
   # Install required packages
   - script: |
-      sudo apt-get install mongodb xvfb qt5-default
+      sudo apt-get install mongodb xvfb
     displayName: "* install required packages"
     condition: succeeded()
 
