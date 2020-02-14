@@ -1,5 +1,9 @@
 jobs:
 - job: run_profile_collection_testing
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
   displayName: "profile_collection (${{ parameters.beamline_acronym }}):"
 
   variables:
