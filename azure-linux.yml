@@ -18,35 +18,35 @@ jobs:
       pyepics_old_ch_py36:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.6
+        PYTHON_VERSION: 3.6.9
       pyepics_new_ch_py36:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.6
+        PYTHON_VERSION: 3.6.9
       caproto_old_ch_py36:
         OPHYD_CONTROL_LAYER: caproto
         CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.6
+        PYTHON_VERSION: 3.6.9
       caproto_new_ch_py36:
         OPHYD_CONTROL_LAYER: caproto
         CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.6
+        PYTHON_VERSION: 3.6.9
       pyepics_old_ch_py37:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.7
+        PYTHON_VERSION: 3.7.5
       pyepics_new_ch_py37:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.7
+        PYTHON_VERSION: 3.7.5
       caproto_old_ch_py37:
         OPHYD_CONTROL_LAYER: caproto
         CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.7
+        PYTHON_VERSION: 3.7.5
       caproto_new_ch_py37:
         OPHYD_CONTROL_LAYER: caproto
         CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.7
+        PYTHON_VERSION: 3.7.5
 
   steps:
 
