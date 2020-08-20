@@ -44,7 +44,7 @@ jobs:
   #   displayName: "* check the startup/ dir exists"
   #   condition: succeeded()
 
-  # Get pyOlog and databroker configs; prepare a profile dir
+  # Get pyOlog and databroker configs
   - script: |
       set -e
       wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/pyOlog.conf -O ~/pyOlog.conf
@@ -52,8 +52,22 @@ jobs:
       mkdir -v -p ~/.config/databroker/
       wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml -O ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
 
+    displayName: "* get pyOlog and databroker configs"
+    condition: succeeded()
+
+  # Prepare a test profile dir
+  - script: |
+      set -e
+
       mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
-    displayName: "* get pyOlog and databroker configs; prepare a profile dir"
+
+      # Copy the entire "startup" directory to the test profile.
+      cp -rv startup ~/.ipython/profile_${TEST_PROFILE}/
+      # Remove the top-level .py files as they will be loaded separately from
+      # profile_collection/startup dir. That allows proper capturing of the
+      # exit code in case IPython startup files have issues.
+      rm -fv ~/.ipython/profile_${TEST_PROFILE}/startup/*.py
+    displayName: "* prepare a test profile dir"
     condition: succeeded()
 
   # Install required packages
