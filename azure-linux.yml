@@ -10,43 +10,20 @@ jobs:
     MPLBACKEND: Qt5Agg
     TEST_PROFILE: test
     OPHYD_TIMEOUT: 60
-    BS_PROFILE: collection
-    BS_ENV_VERSION: 2019C3.0.1
+    CONDA_ENV_NAME: collection-2020-2.0rc7-1
+    PKG_NAME: collection
+    PKG_VERSION: 2020C2.0=*_7
 
   strategy:
     matrix:
-      pyepics_old_ch_py36:
-        OPHYD_CONTROL_LAYER: pyepics
-        CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.6.9
-      pyepics_new_ch_py36:
+      py37_pyepics:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.6.9
-      caproto_old_ch_py36:
-        OPHYD_CONTROL_LAYER: caproto
-        CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.6.9
-      caproto_new_ch_py36:
+        PYTHON_VERSION: 3.7
+      py37_caproto:
         OPHYD_CONTROL_LAYER: caproto
         CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.6.9
-      pyepics_old_ch_py37:
-        OPHYD_CONTROL_LAYER: pyepics
-        CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.7.5
-      pyepics_new_ch_py37:
-        OPHYD_CONTROL_LAYER: pyepics
-        CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.7.5
-      caproto_old_ch_py37:
-        OPHYD_CONTROL_LAYER: caproto
-        CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.7.5
-      caproto_new_ch_py37:
-        OPHYD_CONTROL_LAYER: caproto
-        CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.7.5
+        PYTHON_VERSION: 3.7
 
   steps:
 
@@ -104,7 +81,7 @@ jobs:
   # Create conda env
   - script: |
       set -e
-      conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${CONDA_CHANNEL_NAME} ${BS_PROFILE}=${BS_ENV_VERSION} python=${PYTHON_VERSION}
+      conda create -y -p ~/mc/envs/${CONDA_ENV_NAME} -c ${CONDA_CHANNEL_NAME} ${PKG_NAME}=${PKG_VERSION} python=${PYTHON_VERSION}
       conda env list
     displayName: "* create test conda env"
     condition: succeeded()
@@ -113,7 +90,7 @@ jobs:
   - script: |
       set -e
       source ~/mc/etc/profile.d/conda.sh
-      conda activate ${BS_PROFILE}-${BS_ENV_VERSION}
+      conda activate ${CONDA_ENV_NAME}
       if [ -f .ci/bl-specific.sh ]; then
           cat .ci/bl-specific.sh
           bash .ci/bl-specific.sh
@@ -131,7 +108,7 @@ jobs:
 
       # Activate the test env and display some relevant info:
       source ~/mc/etc/profile.d/conda.sh
-      conda activate ${BS_PROFILE}-${BS_ENV_VERSION}
+      conda activate ${CONDA_ENV_NAME}
       conda env list
       conda info
       conda list
