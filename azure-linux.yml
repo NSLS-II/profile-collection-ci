@@ -73,6 +73,7 @@ jobs:
   # Install required packages
   - script: |
       sudo apt-get clean
+      sudo apt-get update
       sudo apt-get install mongodb xvfb
     displayName: "* install required packages"
     condition: succeeded()
