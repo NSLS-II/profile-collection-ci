@@ -2,7 +2,7 @@ jobs:
 - job: run_profile_collection_testing
 
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'ubuntu-20.04'
 
   displayName: "profile_collection (${{ parameters.beamline_acronym }}):"
 
