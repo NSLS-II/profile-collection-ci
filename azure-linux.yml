@@ -2,7 +2,7 @@ jobs:
 - job: run_profile_collection_testing
 
   pool:
-    vmImage: 'ubuntu-20.04'
+    vmImage: 'ubuntu-latest'
 
   displayName: "profile_collection (${{ parameters.beamline_acronym }}):"
 
@@ -72,6 +72,7 @@ jobs:
 
   # Install required packages
   - script: |
+      sudo apt-get clean
       sudo apt-get install mongodb xvfb
     displayName: "* install required packages"
     condition: succeeded()
