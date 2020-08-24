@@ -1,17 +1,14 @@
+resources:
+  containers:
+    - container: mongo
+      image: mongo:3.6.11
+      options: --user 0:0
+
 jobs:
 - job: run_profile_collection_testing
-  
+
   pool:
     vmImage: 'ubuntu-20.04'
-
-  resources:
-    containers:
-      - container: node
-        image: circleci/node:12.14.1-browsers
-        options: --user 0:0
-      - container: mongo
-        image: mongo:3.6.11      
-        options: --user 0:0 
 
   services:
     mongo: mongo
