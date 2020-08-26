@@ -70,18 +70,19 @@ jobs:
     displayName: "* prepare a test profile dir"
     condition: succeeded()
 
+  # Check services and system packages
+  - script: |
+      sudo systemctl status
+      apt list --installed
+    displayName: "* check services and system packages"
+    condition: succeeded()
+
   # Install required packages
   - script: |
       sudo apt-get clean
       sudo apt-get update
       sudo apt-get install xvfb
     displayName: "* install required packages"
-    condition: succeeded()
-
-  # Check services
-  - script: |
-      sudo systemctl status
-    displayName: "* check services"
     condition: succeeded()
 
   # Start mongodb
