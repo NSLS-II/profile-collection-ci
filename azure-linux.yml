@@ -77,18 +77,20 @@ jobs:
     displayName: "* check services and system packages"
     condition: succeeded()
 
-  # Install required packages
-  - script: |
-      sudo apt-get clean
-      sudo apt-get update
-      sudo apt-get install xvfb
-    displayName: "* install required packages"
-    condition: succeeded()
+  # In Ubuntu 18.04/bionic the mongodb-org and xvfb packages are already
+  # preinstalled.
+  # # Install required packages
+  # - script: |
+  #     sudo apt-get clean
+  #     sudo apt-get update
+  #     sudo apt-get install xvfb
+  #   displayName: "* install required packages"
+  #   condition: succeeded()
 
-  # Start mongodb
+  # Start mongodb service
   - script: |
-      sudo systemctl start mongodb && sudo systemctl status mongodb
-    displayName: "* start mongodb"
+      sudo systemctl start mongod && sudo systemctl status mongod
+    displayName: "* start mongodb service"
     condition: succeeded()
 
   # Download and install miniconda
