@@ -74,8 +74,14 @@ jobs:
   - script: |
       sudo apt-get clean
       sudo apt-get update
-      sudo apt-get install mongodb xvfb
+      sudo apt-get install xvfb
     displayName: "* install required packages"
+    condition: succeeded()
+
+  # Check services
+  - script: |
+      sudo systemctl status
+    displayName: "* check services"
     condition: succeeded()
 
   # Start mongodb
