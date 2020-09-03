@@ -184,7 +184,6 @@ jobs:
       EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
 
     displayName: "* start caproto IOC and start IPython with startup files"
-    condition: succeeded()
 
   # Display bluesky logs
   - script: |
@@ -196,3 +195,4 @@ jobs:
       cat $HOME/.cache/bluesky/log/bluesky_ipython.log
       echo "\n\n=============================================================="
     displayName: "* display bluesky logs"
+    condition: succeeded()
