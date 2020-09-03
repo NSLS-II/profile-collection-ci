@@ -195,4 +195,3 @@ jobs:
       cat $HOME/.cache/bluesky/log/bluesky_ipython.log
       echo "\n\n=============================================================="
     displayName: "* display bluesky logs"
-    condition: succeeded()
