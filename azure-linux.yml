@@ -183,5 +183,13 @@ jobs:
       # "--profile=<profile-name>"), but rather load an empty test profile:
       EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
 
+      # Display the logs:
+      echo "\n\n=============================================================="
+      cat $HOME/.cache/bluesky/log/bluesky.log
+      echo "=============================================================="
+
+      echo "\n\n=============================================================="
+      cat $HOME/.cache/bluesky/log/bluesky_ipython.log
+      echo "\n\n=============================================================="
     displayName: "* start caproto IOC and start IPython with startup files"
     condition: succeeded()
