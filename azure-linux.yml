@@ -95,6 +95,12 @@ jobs:
     displayName: "* start mongodb service"
     condition: succeeded()
 
+  # Start docker service
+  - script: |
+      sudo systemctl start docker && sudo systemctl status docker
+    displayName: "* start docker service"
+    condition: succeeded()
+
   # Download and install miniconda
   - script: |
       set -e
