@@ -11,8 +11,10 @@ jobs:
     TEST_PROFILE: test
     OPHYD_TIMEOUT: 60
     CONDA_ENV_NAME: collection-2020-2.0rc8
-    # https://doi.org/10.5281/zenodo.4057062
-    ZENODO_ID: 4057062
+    # DOI: https://doi.org/10.5281/zenodo.4057063
+    # URL: https://zenodo.org/record/4057063/files/collection-2020-2.0rc8.tar.gz?download=1
+    ZENODO_ID: 4057063
+    MD5_CHECKSUM: db8fb77565afaa7a4c75ddcf4c5f839b
 
   strategy:
     matrix:
@@ -107,8 +109,10 @@ jobs:
   - script: |
       set -e
       wget https://zenodo.org/record/${ZENODO_ID}/files/${CONDA_ENV_NAME}.tar.gz?download=1 -O ${CONDA_ENV_NAME}.tar.gz
+      echo "${MD5_CHECKSUM}  ${CONDA_ENV_NAME}.tar.gz" > checksum.txt
+      md5sum --check checksum.txt
       mkdir -p $HOME/miniconda/envs/${CONDA_ENV_NAME}
-      tar -xvf --directory $HOME/miniconda/envs/${CONDA_ENV_NAME} ${CONDA_ENV_NAME}.tar.gz
+      tar -xvf ${CONDA_ENV_NAME}.tar.gz -C $HOME/miniconda/envs/${CONDA_ENV_NAME}
 
       conda info -a
       conda env list
