@@ -10,9 +10,9 @@ jobs:
     MPLBACKEND: Qt5Agg
     TEST_PROFILE: test
     OPHYD_TIMEOUT: 60
-    CONDA_ENV_NAME: collection-2020-2.0rc7-1
-    PKG_NAME: collection
-    PKG_VERSION: 2020C2.0=*_7
+    CONDA_ENV_NAME: collection-2020-2.0rc8
+    # https://doi.org/10.5281/zenodo.4057062
+    ZENODO_ID: 4057062
 
   strategy:
     matrix:
@@ -97,8 +97,8 @@ jobs:
   - script: |
       set -e
       wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-      sh ./miniconda.sh -b -p ~/mc
-      source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
+      bash ./miniconda.sh -b -p $HOME/miniconda
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda update conda --yes
     displayName: "* download and install miniconda"
     condition: succeeded()
@@ -106,8 +106,14 @@ jobs:
   # Create conda env
   - script: |
       set -e
-      conda create -y -p ~/mc/envs/${CONDA_ENV_NAME} -c ${CONDA_CHANNEL_NAME} ${PKG_NAME}=${PKG_VERSION} python=${PYTHON_VERSION}
+      wget https://zenodo.org/record/${ZENODO_ID}/files/${CONDA_ENV_NAME}.tar.gz?download=1 -O ${CONDA_ENV_NAME}.tar.gz
+      mkdir -p $HOME/miniconda/envs/${CONDA_ENV_NAME}
+      tar -xvf --directory $HOME/miniconda/envs/${CONDA_ENV_NAME} ${CONDA_ENV_NAME}.tar.gz
+
+      conda info -a
       conda env list
+      conda list
+      pip list
     displayName: "* create test conda env"
     condition: succeeded()
 
