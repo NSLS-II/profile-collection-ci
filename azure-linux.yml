@@ -9,12 +9,15 @@ jobs:
   variables:
     MPLBACKEND: Qt5Agg
     TEST_PROFILE: test
-    OPHYD_TIMEOUT: 60
     CONDA_ENV_NAME: collection-2020-2.0rc8
     # DOI: https://doi.org/10.5281/zenodo.4057063
     # URL: https://zenodo.org/record/4057063/files/collection-2020-2.0rc8.tar.gz?download=1
     ZENODO_ID: 4057063
     MD5_CHECKSUM: db8fb77565afaa7a4c75ddcf4c5f839b
+    # Ophyd/EPICS vars
+    OPHYD_TIMEOUT: 60
+    EPICS_CA_AUTO_ADDR_LIST: NO
+    EPICS_CA_ADDR_LIST: 127.0.0.1
 
   strategy:
     matrix:
@@ -200,7 +203,7 @@ jobs:
       # Start IPython startup files one by one using the generated command.
       # We don't load the startup files by IPython's means (with
       # "--profile=<profile-name>"), but rather load an empty test profile:
-      EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
+      ipython --profile=${TEST_PROFILE} -c "$command"
 
     displayName: "* start caproto IOC and start IPython with startup files"
     condition: succeeded()
