@@ -98,7 +98,7 @@ jobs:
   # Download and install miniconda
   - script: |
       set -e
-      wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
       bash ./miniconda.sh -b -p $HOME/miniconda
       source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda update conda --yes
@@ -108,11 +108,14 @@ jobs:
   # Create conda env
   - script: |
       set -e
-      wget https://zenodo.org/record/${ZENODO_ID}/files/${CONDA_ENV_NAME}.tar.gz?download=1 -O ${CONDA_ENV_NAME}.tar.gz
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
+      wget -q https://zenodo.org/record/${ZENODO_ID}/files/${CONDA_ENV_NAME}.tar.gz?download=1 -O ${CONDA_ENV_NAME}.tar.gz
       echo "${MD5_CHECKSUM}  ${CONDA_ENV_NAME}.tar.gz" > checksum.txt
       md5sum --check checksum.txt
       mkdir -p $HOME/miniconda/envs/${CONDA_ENV_NAME}
-      tar -xvf ${CONDA_ENV_NAME}.tar.gz -C $HOME/miniconda/envs/${CONDA_ENV_NAME}
+      tar -xf ${CONDA_ENV_NAME}.tar.gz -C $HOME/miniconda/envs/${CONDA_ENV_NAME}
+      conda activate $HOME/miniconda/envs/${CONDA_ENV_NAME}
+      conda unpack
 
       conda info -a
       conda env list
@@ -124,7 +127,7 @@ jobs:
   # Perform beamline-specific actions
   - script: |
       set -e
-      source ~/mc/etc/profile.d/conda.sh
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda activate ${CONDA_ENV_NAME}
       if [ -f .ci/bl-specific.sh ]; then
           cat .ci/bl-specific.sh
@@ -142,7 +145,7 @@ jobs:
       export DISPLAY=:99
 
       # Activate the test env and display some relevant info:
-      source ~/mc/etc/profile.d/conda.sh
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda activate ${CONDA_ENV_NAME}
       conda env list
       conda info
