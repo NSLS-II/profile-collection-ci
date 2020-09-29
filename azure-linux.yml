@@ -18,6 +18,7 @@ jobs:
     OPHYD_TIMEOUT: 60
     EPICS_CA_AUTO_ADDR_LIST: NO
     EPICS_CA_ADDR_LIST: 127.0.0.1
+    USE_CAPROTO_IOC: 1
 
   strategy:
     matrix:
@@ -142,6 +143,7 @@ jobs:
           cat .ci/bl-specific.sh
           bash .ci/bl-specific.sh
       fi
+      env | sort -u
     displayName: "* perform beamline-specific actions"
     condition: succeeded()
 
@@ -160,12 +162,16 @@ jobs:
       conda info
       conda list
 
-      # Start caproto "black-hole" IOC:
-      echo -e "\n" | caproto-spoof-beamline &
+      env | sort -u
 
-      # Solve a missing "caRepeater" binary (same reason as in
-      # https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15):
-      ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
+      if [ ! -z "${USE_CAPROTO_IOC}" ]; then
+          # Start caproto "black-hole" IOC:
+          echo -e "\n" | caproto-spoof-beamline &
+
+          # Solve a missing "caRepeater" binary (same reason as in
+          # https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15):
+          ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
+      fi
 
       # Monkey-patch the default timeout for the ophyd signals:
       if [ "$OPHYD_CONTROL_LAYER" == "pyepics" ]; then
