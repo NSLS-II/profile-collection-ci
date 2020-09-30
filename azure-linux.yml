@@ -139,6 +139,7 @@ jobs:
       source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda activate ${CONDA_ENV_NAME}
       if [ -f .ci/bl-specific.sh ]; then
+          echo "##vso[task.setvariable variable=USE_EPICS_IOC]${USE_EPICS_IOC}"
           cat .ci/bl-specific.sh
           bash .ci/bl-specific.sh
       fi
@@ -146,7 +147,7 @@ jobs:
     displayName: "* perform beamline-specific actions"
     condition: succeeded()
 
-  # Start caproto IOC and start IPython with startup files
+  # Optionally start caproto IOC and start IPython with startup files
   - script: |
       set -e
       # Start Xvfb
@@ -162,6 +163,7 @@ jobs:
       conda list
 
       env | sort -u
+      echo "##vso[task.setvariable variable=USE_EPICS_IOC]${USE_EPICS_IOC}"
 
       if [ -z "${USE_EPICS_IOC}" ]; then
           # Start caproto "black-hole" IOC:
@@ -212,7 +214,7 @@ jobs:
       # "--profile=<profile-name>"), but rather load an empty test profile:
       ipython --profile=${TEST_PROFILE} -c "$command"
 
-    displayName: "* start caproto IOC and start IPython with startup files"
+    displayName: "* optionally start caproto IOC and start IPython with startup files"
     condition: succeeded()
 
   # Display bluesky logs
