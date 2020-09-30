@@ -144,7 +144,7 @@ jobs:
           . .ci/bl-specific.sh
       fi
       env | sort -u
-      echo '##vso[task.setvariable variable=USE_EPICS_IOC]${USE_EPICS_IOC}'
+      echo "##vso[task.setvariable variable=USE_EPICS_IOC]${USE_EPICS_IOC}"
     displayName: "* perform beamline-specific actions"
     condition: succeeded()
 
