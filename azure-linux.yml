@@ -165,7 +165,7 @@ jobs:
 
       env | sort -u
 
-      if [ -z "${USE_EPICS_IOC}" ]; then
+      if [ -z "${USE_EPICS_IOC}" -o "${USE_EPICS_IOC}" -eq 0 ]; then
           # Start caproto "black-hole" IOC:
           echo -e "\n" | caproto-spoof-beamline &
 
