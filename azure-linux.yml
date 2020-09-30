@@ -191,6 +191,8 @@ jobs:
       import glob
       ip = get_ipython()
       startup_files = sorted(glob.glob('startup/*.py'))
+      if os.path.isfile('.ci/drop-in.py'):
+          startup_files.append('.ci/drop-in.py')
       if not startup_files:
           raise SystemExit(f'Cannot find any startup files in {os.getcwd()}')
       for f in startup_files:
