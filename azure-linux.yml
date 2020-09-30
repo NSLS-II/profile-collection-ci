@@ -144,6 +144,7 @@ jobs:
           . .ci/bl-specific.sh
       fi
       env | sort -u
+      echo '##vso[task.setvariable variable=USE_EPICS_IOC]${USE_EPICS_IOC}'
     displayName: "* perform beamline-specific actions"
     condition: succeeded()
 
@@ -164,7 +165,7 @@ jobs:
 
       env | sort -u
 
-      if [ -z "${USE_EPICS_IOC}" -o "${USE_EPICS_IOC}" == 0 ]; then
+      if [ -z "${USE_EPICS_IOC}" -o "${USE_EPICS_IOC}" -eq 0 ]; then
           # Start caproto "black-hole" IOC:
           echo -e "\n" | caproto-spoof-beamline &
 
