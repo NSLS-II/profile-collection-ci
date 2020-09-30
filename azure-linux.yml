@@ -18,6 +18,7 @@ jobs:
     OPHYD_TIMEOUT: 60
     EPICS_CA_AUTO_ADDR_LIST: NO
     EPICS_CA_ADDR_LIST: 127.0.0.1
+    USE_EPICS_IOC: 0
 
   strategy:
     matrix:
@@ -140,13 +141,11 @@ jobs:
       conda activate ${CONDA_ENV_NAME}
       if [ -f .ci/bl-specific.sh ]; then
           cat .ci/bl-specific.sh
-          bash .ci/bl-specific.sh
+          . .ci/bl-specific.sh
       fi
       env | sort -u
     displayName: "* perform beamline-specific actions"
     condition: succeeded()
-    env:
-      USE_EPICS_IOC: $(USE_EPICS_IOC)
 
   # Optionally start caproto IOC and start IPython with startup files
   - script: |
@@ -165,7 +164,7 @@ jobs:
 
       env | sort -u
 
-      if [ -z "${USE_EPICS_IOC}" ]; then
+      if [ -z "${USE_EPICS_IOC}" -o "${USE_EPICS_IOC}" == 0 ]; then
           # Start caproto "black-hole" IOC:
           echo -e "\n" | caproto-spoof-beamline &
 
@@ -218,8 +217,6 @@ jobs:
 
     displayName: "* optionally start caproto IOC and start IPython with startup files"
     condition: succeeded()
-    env:
-      USE_EPICS_IOC: $(USE_EPICS_IOC)
 
   # Display bluesky logs
   - script: |
