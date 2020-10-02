@@ -9,10 +9,16 @@ jobs:
   variables:
     MPLBACKEND: Qt5Agg
     TEST_PROFILE: test
+    CONDA_ENV_NAME: collection-2020-2.0rc8
+    # DOI: https://doi.org/10.5281/zenodo.4057063
+    # URL: https://zenodo.org/record/4057063/files/collection-2020-2.0rc8.tar.gz?download=1
+    ZENODO_ID: 4057063
+    MD5_CHECKSUM: db8fb77565afaa7a4c75ddcf4c5f839b
+    # Ophyd/EPICS vars
     OPHYD_TIMEOUT: 60
-    CONDA_ENV_NAME: collection-2020-2.0rc7-1
-    PKG_NAME: collection
-    PKG_VERSION: 2020C2.0=*_7
+    EPICS_CA_AUTO_ADDR_LIST: NO
+    EPICS_CA_ADDR_LIST: 127.0.0.1
+    USE_EPICS_IOC: 0
 
   strategy:
     matrix:
@@ -93,12 +99,18 @@ jobs:
     displayName: "* start mongodb service"
     condition: succeeded()
 
+  # Start docker service
+  - script: |
+      sudo systemctl start docker && sudo systemctl status docker
+    displayName: "* start docker service"
+    condition: succeeded()
+
   # Download and install miniconda
   - script: |
       set -e
-      wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-      sh ./miniconda.sh -b -p ~/mc
-      source ~/mc/etc/profile.d/conda.sh  # this makes all conda vars available
+      wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      bash ./miniconda.sh -b -p $HOME/miniconda
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda update conda --yes
     displayName: "* download and install miniconda"
     condition: succeeded()
@@ -106,24 +118,37 @@ jobs:
   # Create conda env
   - script: |
       set -e
-      conda create -y -p ~/mc/envs/${CONDA_ENV_NAME} -c ${CONDA_CHANNEL_NAME} ${PKG_NAME}=${PKG_VERSION} python=${PYTHON_VERSION}
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
+      wget -q https://zenodo.org/record/${ZENODO_ID}/files/${CONDA_ENV_NAME}.tar.gz?download=1 -O ${CONDA_ENV_NAME}.tar.gz
+      echo "${MD5_CHECKSUM} ${CONDA_ENV_NAME}.tar.gz" > checksum.txt
+      md5sum --check checksum.txt
+      mkdir -p $HOME/miniconda/envs/${CONDA_ENV_NAME}
+      tar -xf ${CONDA_ENV_NAME}.tar.gz -C $HOME/miniconda/envs/${CONDA_ENV_NAME}
+      conda activate $HOME/miniconda/envs/${CONDA_ENV_NAME}
+      conda unpack
+
+      conda info -a
       conda env list
+      conda list
+      pip list
     displayName: "* create test conda env"
     condition: succeeded()
 
   # Perform beamline-specific actions
   - script: |
       set -e
-      source ~/mc/etc/profile.d/conda.sh
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda activate ${CONDA_ENV_NAME}
       if [ -f .ci/bl-specific.sh ]; then
           cat .ci/bl-specific.sh
-          bash .ci/bl-specific.sh
+          . .ci/bl-specific.sh
       fi
+      env | sort -u
+      echo "##vso[task.setvariable variable=USE_EPICS_IOC]${USE_EPICS_IOC}"
     displayName: "* perform beamline-specific actions"
     condition: succeeded()
 
-  # Start caproto IOC and start IPython with startup files
+  # Optionally start caproto IOC and start IPython with startup files
   - script: |
       set -e
       # Start Xvfb
@@ -132,18 +157,24 @@ jobs:
       export DISPLAY=:99
 
       # Activate the test env and display some relevant info:
-      source ~/mc/etc/profile.d/conda.sh
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda activate ${CONDA_ENV_NAME}
       conda env list
       conda info
       conda list
 
-      # Start caproto "black-hole" IOC:
-      echo -e "\n" | caproto-spoof-beamline &
+      env | sort -u
 
-      # Solve a missing "caRepeater" binary (same reason as in
-      # https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15):
-      ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
+      if [ -z "$(USE_EPICS_IOC)" -o "$(USE_EPICS_IOC)" -eq 0 ]; then
+          # Start caproto "black-hole" IOC:
+          echo -e "\n" | caproto-spoof-beamline &
+
+          # Solve a missing "caRepeater" binary (same reason as in
+          # https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15):
+          ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
+      else
+          echo "Not using caproto-spoof-beamline IOC as instructed by .ci/bl-specific.sh"
+      fi
 
       # Monkey-patch the default timeout for the ophyd signals:
       if [ "$OPHYD_CONTROL_LAYER" == "pyepics" ]; then
@@ -160,6 +191,8 @@ jobs:
       import glob
       ip = get_ipython()
       startup_files = sorted(glob.glob('startup/*.py'))
+      if os.path.isfile('.ci/drop-in.py'):
+          startup_files.append('.ci/drop-in.py')
       if not startup_files:
           raise SystemExit(f'Cannot find any startup files in {os.getcwd()}')
       for f in startup_files:
@@ -181,19 +214,19 @@ jobs:
       # Start IPython startup files one by one using the generated command.
       # We don't load the startup files by IPython's means (with
       # "--profile=<profile-name>"), but rather load an empty test profile:
-      EPICS_CA_AUTO_ADDR_LIST=NO EPICS_CA_ADDR_LIST=127.0.0.1 ipython --profile=${TEST_PROFILE} -c "$command"
+      ipython --profile=${TEST_PROFILE} -c "$command"
 
-    displayName: "* start caproto IOC and start IPython with startup files"
+    displayName: "* optionally start caproto IOC and start IPython with startup files"
     condition: succeeded()
 
   # Display bluesky logs
   - script: |
-      echo "\n\n=============================================================="
+      echo -e "\n\n=============================================================="
       cat $HOME/.cache/bluesky/log/bluesky.log
-      echo "=============================================================="
+      echo -e "=============================================================="
 
-      echo "\n\n=============================================================="
+      echo -e "\n\n=============================================================="
       cat $HOME/.cache/bluesky/log/bluesky_ipython.log
-      echo "\n\n=============================================================="
+      echo -e "\n\n=============================================================="
     displayName: "* display bluesky logs"
     condition: succeededOrFailed()
