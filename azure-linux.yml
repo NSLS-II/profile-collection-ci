@@ -9,11 +9,11 @@ jobs:
   variables:
     MPLBACKEND: Qt5Agg
     TEST_PROFILE: test
-    CONDA_ENV_NAME: collection-2020-2.0rc9
-    # DOI: https://doi.org/10.5281/zenodo.4279773
-    # URL: https://zenodo.org/record/4279773/files/collection-2020-2.0rc9.tar.gz?download=1
-    ZENODO_ID: 4279773
-    MD5_CHECKSUM: ffa1b683da9e3dcd4c051ec7341ff158
+    CONDA_ENV_NAME: collection-2021-1.0
+    # DOI: https://doi.org/10.5281/zenodo.4421721
+    # URL: https://zenodo.org/record/4421721/files/collection-2021-1.0.tar.gz?download=1
+    ZENODO_ID: 4421721
+    MD5_CHECKSUM: 12fa67ad0ed60bc7eeac8a2765109ab4
     # Ophyd/EPICS vars
     OPHYD_TIMEOUT: 60
     EPICS_CA_AUTO_ADDR_LIST: NO
