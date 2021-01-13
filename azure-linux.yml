@@ -183,11 +183,11 @@ jobs:
 
       # Monkey-patch the default timeout for the ophyd signals:
       if [ "$OPHYD_CONTROL_LAYER" == "pyepics" ]; then
-          connection_timeout="
-      import ophyd
-      import functools
-      ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection, timeout=${OPHYD_TIMEOUT})
-      print(ophyd.signal.EpicsSignalBase.wait_for_connection.__dict__)"
+          connection_timeout=""
+      # import ophyd
+      # import functools
+      # ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection, timeout=${OPHYD_TIMEOUT})
+      # print(ophyd.signal.EpicsSignalBase.wait_for_connection.__dict__)"
       fi
 
       # This is what IPython does internally to load the startup files:
