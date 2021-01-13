@@ -26,10 +26,12 @@ jobs:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: nsls2forge
         PYTHON_VERSION: 3.7
-      py37_caproto:
-        OPHYD_CONTROL_LAYER: caproto
-        CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.7
+      # Commenting out caproto OPHYD_CONTROL_LAYER test due to
+      # https://github.com/caproto/caproto/issues/696.
+      # py37_caproto:
+      #   OPHYD_CONTROL_LAYER: caproto
+      #   CONDA_CHANNEL_NAME: nsls2forge
+      #   PYTHON_VERSION: 3.7
 
   steps:
 
