@@ -70,5 +70,5 @@ steps:
       # "--profile=<profile-name>"), but rather load an empty test profile:
       ipython --profile=${TEST_PROFILE} -c "$command"
 
-    displayName: "* optionally start caproto IOC and start IPython with startup files"
+    displayName: "* run IPython with startup files (v2)"
     condition: succeeded()
