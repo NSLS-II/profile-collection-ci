@@ -1,0 +1,9 @@
+# Check the startup/ dir exists
+steps:
+  - script: |
+      if [ ! -d "startup/" ]; then
+          echo "No startup/ dir found in $PWD"
+          exit 9
+      fi
+    displayName: "* check the startup/ dir exists"
+    condition: succeeded()

@@ -1,0 +1,5 @@
+# Check the env
+steps:
+  - script: env | sort -u
+    displayName: "* check the env"
+    condition: succeeded()

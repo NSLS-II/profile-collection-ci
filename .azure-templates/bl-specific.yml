@@ -1,0 +1,15 @@
+# Perform beamline-specific actions
+steps:
+  - script: |
+      set -e
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
+      conda activate ${CONDA_ENV_NAME}
+      if [ -f .ci/bl-specific.sh ]; then
+          cat .ci/bl-specific.sh
+          . .ci/bl-specific.sh
+      fi
+      env | sort -u
+      echo "##vso[task.setvariable variable=USE_EPICS_IOC]${USE_EPICS_IOC}"
+      echo "##vso[task.setvariable variable=AZURE_TESTING]${AZURE_TESTING}"
+    displayName: "* perform beamline-specific actions"
+    condition: succeeded()

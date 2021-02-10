@@ -1,0 +1,7 @@
+# Check services and system packages
+steps:
+  - script: |
+      sudo systemctl status
+      apt list --installed
+    displayName: "* check services and system packages"
+    condition: succeeded()

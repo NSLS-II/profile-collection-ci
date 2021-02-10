@@ -1,0 +1,6 @@
+# Start mongodb service
+steps:
+  - script: |
+      sudo systemctl start mongod && sudo systemctl status mongod
+    displayName: "* start mongodb service"
+    condition: succeeded()

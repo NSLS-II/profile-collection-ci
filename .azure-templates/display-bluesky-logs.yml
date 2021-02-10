@@ -1,0 +1,12 @@
+# Display bluesky logs
+steps:
+  - script: |
+      echo -e "\n\n=============================================================="
+      cat $HOME/.cache/bluesky/log/bluesky.log
+      echo -e "=============================================================="
+
+      echo -e "\n\n=============================================================="
+      cat $HOME/.cache/bluesky/log/bluesky_ipython.log
+      echo -e "\n\n=============================================================="
+    displayName: "* display bluesky logs"
+    condition: succeededOrFailed()

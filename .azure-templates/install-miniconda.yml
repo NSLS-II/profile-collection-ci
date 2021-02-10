@@ -1,0 +1,10 @@
+# Download and install miniconda
+steps:
+  - script: |
+      set -e
+      wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+      bash ./miniconda.sh -b -p $HOME/miniconda
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
+      conda update conda --yes
+    displayName: "* download and install miniconda"
+    condition: succeeded()

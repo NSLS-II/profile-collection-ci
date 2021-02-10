@@ -1,0 +1,8 @@
+# Create conda env from packages
+steps:
+  - script: |
+      set -e
+      conda create -y -p ~/mc/envs/${BS_PROFILE}-${BS_ENV_VERSION} -c ${CONDA_CHANNEL_NAME} ${BS_PROFILE}=${BS_ENV_VERSION} python=${PYTHON_VERSION}
+      conda env list
+    displayName: "* create test conda env from packages"
+    condition: succeeded()

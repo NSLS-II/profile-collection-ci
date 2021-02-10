@@ -1,0 +1,6 @@
+# Start docker service
+steps:
+  - script: |
+      sudo systemctl start docker && sudo systemctl status docker
+    displayName: "* start docker service"
+    condition: succeeded()

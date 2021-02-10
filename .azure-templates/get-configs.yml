@@ -1,0 +1,11 @@
+# Get pyOlog and databroker configs
+steps:
+  - script: |
+      set -e
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/pyOlog.conf -O ~/pyOlog.conf
+
+      mkdir -v -p ~/.config/databroker/
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml -O ~/.config/databroker/_legacy_config.yml
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml -O ~/.config/databroker/$(echo ${{ parameters.beamline_acronym }} | awk '{print tolower($1)}').yml
+    displayName: "* get pyOlog and databroker configs"
+    condition: succeeded()

@@ -1,0 +1,25 @@
+# Prepare a test profile dir
+steps:
+  - script: |
+      set -e
+
+      mkdir -v -p ~/.ipython/profile_${TEST_PROFILE}
+
+      # TODO: remove the condition below once all repos are compliant.
+      # This is a temporary step, and is needed for the non-compliant BL
+      # profiles:
+      # - https://github.com/NSLS-II-HXN/ipython_ophyd/tree/master/profile_collection
+      # - https://github.com/NSLS-II-IXS/.ipython/tree/master/profile_collection
+      # - https://github.com/NSLS-II-CSX/xf23id1_profiles/tree/master/profile_collection
+      if [ -d "profile_collection/" ]; then
+          cd profile_collection/
+      fi
+
+      # Copy the entire "startup" directory to the test profile.
+      cp -rv startup ~/.ipython/profile_${TEST_PROFILE}/
+      # Remove the top-level .py files as they will be loaded separately from
+      # profile_collection/startup dir. That allows proper capturing of the
+      # exit code in case IPython startup files have issues.
+      rm -fv ~/.ipython/profile_${TEST_PROFILE}/startup/*.py
+    displayName: "* prepare a test profile dir"
+    condition: succeeded()
