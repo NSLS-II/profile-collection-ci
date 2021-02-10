@@ -15,22 +15,22 @@ jobs:
 
   strategy:
     matrix:
-      pyepics_old_ch_py37:
+      collection_2019_3_0_1:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: lightsource2-tag
         PYTHON_VERSION: 3.7.5
-      pyepics_new_ch_py37:
-        OPHYD_CONTROL_LAYER: pyepics
-        CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.7.5
-      caproto_old_ch_py37:
-        OPHYD_CONTROL_LAYER: caproto
-        CONDA_CHANNEL_NAME: lightsource2-tag
-        PYTHON_VERSION: 3.7.5
-      caproto_new_ch_py37:
-        OPHYD_CONTROL_LAYER: caproto
-        CONDA_CHANNEL_NAME: nsls2forge
-        PYTHON_VERSION: 3.7.5
+      # pyepics_new_ch_py37:
+      #   OPHYD_CONTROL_LAYER: pyepics
+      #   CONDA_CHANNEL_NAME: nsls2forge
+      #   PYTHON_VERSION: 3.7.5
+      # caproto_old_ch_py37:
+      #   OPHYD_CONTROL_LAYER: caproto
+      #   CONDA_CHANNEL_NAME: lightsource2-tag
+      #   PYTHON_VERSION: 3.7.5
+      # caproto_new_ch_py37:
+      #   OPHYD_CONTROL_LAYER: caproto
+      #   CONDA_CHANNEL_NAME: nsls2forge
+      #   PYTHON_VERSION: 3.7.5
 
   steps:
 
@@ -63,15 +63,9 @@ jobs:
     displayName: "* get pyOlog and databroker configs; prepare a profile dir"
     condition: succeeded()
 
-  # Install required packages
-  - script: |
-      sudo apt-get install mongodb xvfb
-    displayName: "* install required packages"
-    condition: succeeded()
-
   # Start mongodb
   - script: |
-      sudo systemctl start mongodb && sudo systemctl status mongodb
+      sudo systemctl start mongod && sudo systemctl status mongod
     displayName: "* start mongodb"
     condition: succeeded()
 
