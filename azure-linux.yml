@@ -1,5 +1,5 @@
 jobs:
-- job: run_profile_collection_testing
+- job: run_profile_collection_2021_1_0
 
   pool:
     vmImage: 'ubuntu-latest'
@@ -22,7 +22,7 @@ jobs:
 
   strategy:
     matrix:
-      py37_pyepics:
+      collection_2021_1_0:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: nsls2forge
         PYTHON_VERSION: 3.7
