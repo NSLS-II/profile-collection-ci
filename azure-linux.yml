@@ -1,5 +1,5 @@
 jobs:
-- job: run_profile_collection_testing
+- job: run_profile_collection_2019-3.0.1
 
   pool:
     vmImage: 'ubuntu-latest'
