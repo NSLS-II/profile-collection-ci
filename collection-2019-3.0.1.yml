@@ -13,6 +13,7 @@ jobs:
     BS_PROFILE: collection
     BS_ENV_VERSION: 2019C3.0.1
     BEAMLINE_ACRONYM: ${{ parameters.beamline_acronym }}
+    CAPROTO_COMMAND: "caproto-spoof-beamline"
 
   strategy:
     matrix:
@@ -66,4 +67,4 @@ jobs:
     - template: .azure-templates/bl-specific.yml
 
     # Start caproto IOC and start IPython with startup files
-    - template: .azure-templates/run-tests-v1.yml
+    - template: .azure-templates/run-tests.yml
