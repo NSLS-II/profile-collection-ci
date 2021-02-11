@@ -12,6 +12,7 @@ jobs:
     OPHYD_TIMEOUT: 60
     BS_PROFILE: collection
     BS_ENV_VERSION: 2019C3.0.1
+    BEAMLINE_ACRONYM: ${{ parameters.beamline_acronym }}
 
   strategy:
     matrix:
