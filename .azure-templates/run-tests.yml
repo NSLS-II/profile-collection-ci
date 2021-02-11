@@ -16,7 +16,9 @@ steps:
 
       env | sort -u
 
-      if [ -z "$(USE_EPICS_IOC)" -o "$(USE_EPICS_IOC)" -eq 0 ]; then
+      if [ ! -z "${USE_EPICS_IOC}" -a "${USE_EPICS_IOC}" == "1" ]; then
+          echo "Not using caproto-spoof-beamline IOC as instructed by .ci/bl-specific.sh"
+      else
           # Start caproto "black-hole" IOC:
 
           # TODO: revert it once https://github.com/caproto/caproto/pull/695 is merged/released.
@@ -26,8 +28,6 @@ steps:
           # Solve a missing "caRepeater" binary (same reason as in
           # https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15):
           ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
-      else
-          echo "Not using caproto-spoof-beamline IOC as instructed by .ci/bl-specific.sh"
       fi
 
       # Monkey-patch the default timeout for the ophyd signals:

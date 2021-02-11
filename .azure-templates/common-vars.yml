@@ -1,0 +1,8 @@
+variables:
+  BEAMLINE_ACRONYM: ${{ parameters.beamline_acronym }}
+  EPICS_CA_ADDR_LIST: 127.0.0.1
+  EPICS_CA_AUTO_ADDR_LIST: NO
+  MPLBACKEND: Qt5Agg
+  OPHYD_TIMEOUT: 60
+  TEST_PROFILE: test
+  USE_EPICS_IOC: 0
