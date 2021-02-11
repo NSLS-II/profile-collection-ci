@@ -4,10 +4,12 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
 
-  displayName: "profile_collection (${{ parameters.beamline_acronym }}):"
+  displayName: "${{ parameters.beamline_acronym }}:"
 
   variables:
     - template: .azure-templates/common-vars.yml
+    - name: BEAMLINE_ACRONYM
+      value: ${{ parameters.beamline_acronym }}
     - name: CAPROTO_COMMAND
       value: "caproto-spoof-beamline"
     - name: CONDA_ENV_NAME
