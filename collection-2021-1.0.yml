@@ -4,7 +4,7 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
 
-  displayName: "${{ variables.BEAMLINE_ACRONYM }}:"
+  displayName: "$(BEAMLINE_ACRONYM):"
 
   variables:
     - template: .azure-templates/common-vars.yml
