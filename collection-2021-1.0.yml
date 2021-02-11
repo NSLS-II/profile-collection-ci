@@ -67,7 +67,7 @@ jobs:
     # Perform beamline-specific actions
     - template: .azure-templates/bl-specific.yml
 
-    # Optionally start caproto IOC and start IPython with startup files
+    # Start caproto IOC and start IPython with startup files
     - template: .azure-templates/run-tests.yml
 
     # Display bluesky logs
