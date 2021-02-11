@@ -1,10 +1,4 @@
-parameters:
-  - name: beamline_acronym
-    type: string
-    default: ""
-
 variables:
-  BEAMLINE_ACRONYM: ${{ parameters.beamline_acronym }}
   EPICS_CA_ADDR_LIST: 127.0.0.1
   EPICS_CA_AUTO_ADDR_LIST: NO
   MPLBACKEND: Qt5Agg
