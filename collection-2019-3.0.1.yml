@@ -7,9 +7,9 @@ jobs:
   displayName: "profile_collection (${{ parameters.beamline_acronym }}):"
 
   variables:
-    CAPROTO_COMMAND: "caproto-spoof-beamline"
-    CONDA_ENV_NAME: collection-2019-3.0.1
-    PKG_VERSION: 2019C3.0.1
+    - CAPROTO_COMMAND: "caproto-spoof-beamline"
+    - CONDA_ENV_NAME: collection-2019-3.0.1
+    - PKG_VERSION: 2019C3.0.1
     - template: .azure-templates/common-vars.yml
 
   strategy:
