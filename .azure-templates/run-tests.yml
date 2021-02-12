@@ -1,0 +1,74 @@
+# Optionally start caproto IOC and start IPython with startup files
+steps:
+  - script: |
+      set -e
+      # Start Xvfb
+      # (from https://developercommunity.visualstudio.com/content/problem/336288/headless-testing-using-xvfb-on-hosted-ubuntu-1604.html)
+      /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
+      export DISPLAY=:99
+
+      # Activate the test env and display some relevant info:
+      source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
+      conda activate ${CONDA_ENV_NAME}
+      conda env list
+      conda info
+      conda list
+
+      env | sort -u
+
+      if [ ! -z "${USE_EPICS_IOC}" -a "${USE_EPICS_IOC}" == "1" ]; then
+          echo "Not using caproto-spoof-beamline IOC as instructed by .ci/bl-specific.sh"
+      else
+          # Start caproto "black-hole" IOC:
+
+          # TODO: revert it once https://github.com/caproto/caproto/pull/695 is merged/released.
+          # echo -e "\n" | caproto-spoof-beamline &
+          echo -e "\n" | ${CAPROTO_COMMAND} &
+
+          # Solve a missing "caRepeater" binary (same reason as in
+          # https://github.com/bluesky/tutorial/blob/master/binder/postBuild#L14-L15):
+          ln -sv caproto-repeater ${CONDA_PREFIX}/bin/caRepeater
+      fi
+
+      # Monkey-patch the default timeout for the ophyd signals:
+      if [ "$OPHYD_CONTROL_LAYER" == "pyepics" ]; then
+          connection_timeout=""
+      # import ophyd
+      # import functools
+      # ophyd.signal.EpicsSignalBase.wait_for_connection = functools.partialmethod(ophyd.signal.EpicsSignalBase.wait_for_connection, timeout=${OPHYD_TIMEOUT})
+      # print(ophyd.signal.EpicsSignalBase.wait_for_connection.__dict__)"
+      fi
+
+      # This is what IPython does internally to load the startup files:
+      command="${connection_timeout}
+      import os
+      import glob
+      ip = get_ipython()
+      startup_files = sorted(glob.glob('startup/*.py'))
+      if os.path.isfile('.ci/drop-in.py'):
+          startup_files.append('.ci/drop-in.py')
+      if not startup_files:
+          raise SystemExit(f'Cannot find any startup files in {os.getcwd()}')
+      for f in startup_files:
+          print(f'Executing {f} in CI')
+          ip.parent._exec_file(f)"
+
+      echo "$command"
+
+      # TODO: remove the condition below once all repos are compliant.
+      # This is a temporary step, and is needed for the non-compliant BL
+      # profiles:
+      # - https://github.com/NSLS-II-HXN/ipython_ophyd/tree/master/profile_collection
+      # - https://github.com/NSLS-II-IXS/.ipython/tree/master/profile_collection
+      # - https://github.com/NSLS-II-CSX/xf23id1_profiles/tree/master/profile_collection
+      if [ -d "profile_collection/" ]; then
+          cd profile_collection/
+      fi
+
+      # Start IPython startup files one by one using the generated command.
+      # We don't load the startup files by IPython's means (with
+      # "--profile=<profile-name>"), but rather load an empty test profile:
+      ipython --profile=${TEST_PROFILE} -c "$command"
+
+    displayName: "* run IPython with startup files"
+    condition: succeeded()

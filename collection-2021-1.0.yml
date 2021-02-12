@@ -4,22 +4,22 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
 
-  displayName: "profile_collection (${{ parameters.beamline_acronym }}):"
+  displayName: "${{ parameters.beamline_acronym }}:"
 
   variables:
-    MPLBACKEND: Qt5Agg
-    TEST_PROFILE: test
-    CONDA_ENV_NAME: collection-2021-1.0
+    - template: .azure-templates/common-vars.yml
+    - name: BEAMLINE_ACRONYM
+      value: ${{ parameters.beamline_acronym }}
+    - name: CAPROTO_COMMAND
+      value: "python -m caproto.ioc_examples.pathological.spoof_beamline"
+    - name: CONDA_ENV_NAME
+      value: collection-2021-1.0
     # DOI: https://doi.org/10.5281/zenodo.4421721
     # URL: https://zenodo.org/record/4421721/files/collection-2021-1.0.tar.gz?download=1
-    ZENODO_ID: 4421721
-    MD5_CHECKSUM: 12fa67ad0ed60bc7eeac8a2765109ab4
-    # Ophyd/EPICS vars
-    OPHYD_TIMEOUT: 60
-    EPICS_CA_AUTO_ADDR_LIST: NO
-    EPICS_CA_ADDR_LIST: 127.0.0.1
-    USE_EPICS_IOC: 0
-    BEAMLINE_ACRONYM: ${{ parameters.beamline_acronym }}
+    - name: ZENODO_ID
+      value: 4421721
+    - name: MD5_CHECKSUM
+      value: 12fa67ad0ed60bc7eeac8a2765109ab4
 
   strategy:
     matrix:
@@ -69,8 +69,8 @@ jobs:
     # Perform beamline-specific actions
     - template: .azure-templates/bl-specific.yml
 
-    # Optionally start caproto IOC and start IPython with startup files
-    - template: .azure-templates/run-tests-v2.yml
+    # Start caproto IOC and start IPython with startup files
+    - template: .azure-templates/run-tests.yml
 
     # Display bluesky logs
     - template: .azure-templates/display-bluesky-logs.yml
