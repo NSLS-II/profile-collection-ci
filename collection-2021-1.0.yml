@@ -8,6 +8,8 @@ jobs:
 
   variables:
     - template: .azure-templates/common-vars.yml
+    - name: BEAMLINE_ACRONYM
+      value: ${{ parameters.beamline_acronym }}
     - name: CAPROTO_COMMAND
       value: "python -m caproto.ioc_examples.pathological.spoof_beamline"
     - name: CONDA_ENV_NAME
