@@ -50,6 +50,8 @@ steps:
       if not startup_files:
           raise SystemExit(f'Cannot find any startup files in {os.getcwd()}')
       for f in startup_files:
+          if not os.path.isfile(f):
+              raise FileNotFoundError(f'File {f} cannot be found.')
           print(f'Executing {f} in CI')
           ip.parent._exec_file(f)"
 
