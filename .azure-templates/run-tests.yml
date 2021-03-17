@@ -44,7 +44,7 @@ steps:
       import os
       import glob
       ip = get_ipython()
-      startup_files = sorted(glob.glob('startup/*.py'))
+      startup_files = sorted(glob.glob(os.path.join(os.getcwd(), 'startup/*.py')))
       if os.path.isfile('.ci/drop-in.py'):
           startup_files.append('.ci/drop-in.py')
       if not startup_files:
