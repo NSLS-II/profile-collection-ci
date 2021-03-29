@@ -1,0 +1,6 @@
+# Start redis service
+steps:
+  - script: |
+      sudo systemctl start redis && sudo systemctl status redis
+    displayName: "* start redis service"
+    condition: succeeded()
