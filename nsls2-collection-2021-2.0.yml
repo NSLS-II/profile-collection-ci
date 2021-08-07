@@ -23,7 +23,7 @@ jobs:
 
   strategy:
     matrix:
-      collection_2021_2_0:
+      nsls2_collection_2021_2_0:
         OPHYD_CONTROL_LAYER: pyepics
         CONDA_CHANNEL_NAME: conda-forge
         PYTHON_VERSION: 3.7
