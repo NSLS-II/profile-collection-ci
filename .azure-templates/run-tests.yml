@@ -10,11 +10,15 @@ steps:
       # Activate the test env and display some relevant info:
       source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda activate ${CONDA_ENV_NAME}
+      echo "##[group]Conda env info"
       conda env list
       conda info
       conda list
+      echo "##[endgroup]"
 
+      echo "##[group]Environment variables"
       env | sort -u
+      echo "##[endgroup]"
 
       if [ ! -z "${USE_EPICS_IOC}" -a "${USE_EPICS_IOC}" == "1" ]; then
           echo "Not using caproto-spoof-beamline IOC as instructed by .ci/bl-specific.sh"
@@ -55,7 +59,9 @@ steps:
           print(f'Executing {f} in CI')
           ip.parent._exec_file(f)"
 
+      echo "##[group]Command to use"
       echo "$command"
+      echo "##[endgroup]"
 
       # TODO: remove the condition below once all repos are compliant.
       # This is a temporary step, and is needed for the non-compliant BL
