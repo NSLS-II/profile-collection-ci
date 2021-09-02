@@ -7,14 +7,16 @@ steps:
       /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
       export DISPLAY=:99
 
-      echo "##[group]Packages and env info"
       # Activate the test env and display some relevant info:
       source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda activate ${CONDA_ENV_NAME}
+      echo "##[group]Conda env info"
       conda env list
       conda info
       conda list
+      echo "##[endgroup]"
 
+      echo "##[group]Environment variables"
       env | sort -u
       echo "##[endgroup]"
 
@@ -57,7 +59,9 @@ steps:
           print(f'Executing {f} in CI')
           ip.parent._exec_file(f)"
 
+      echo "##[group]Command to use"
       echo "$command"
+      echo "##[endgroup]"
 
       # TODO: remove the condition below once all repos are compliant.
       # This is a temporary step, and is needed for the non-compliant BL
