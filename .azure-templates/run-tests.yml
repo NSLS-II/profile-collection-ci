@@ -7,6 +7,7 @@ steps:
       /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
       export DISPLAY=:99
 
+      echo "##[group]Packages and env info"
       # Activate the test env and display some relevant info:
       source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       conda activate ${CONDA_ENV_NAME}
@@ -15,6 +16,7 @@ steps:
       conda list
 
       env | sort -u
+      echo "##[endgroup]"
 
       if [ ! -z "${USE_EPICS_IOC}" -a "${USE_EPICS_IOC}" == "1" ]; then
           echo "Not using caproto-spoof-beamline IOC as instructed by .ci/bl-specific.sh"
