@@ -19,7 +19,7 @@ jobs:
     - name: ZENODO_ID
       value: 5607721
     - name: MD5_CHECKSUM
-      value: 29ae246bc2def7d6ce07980b5a8f85e9
+      value: 9295ad8e6b970f37255002010f1fa302
 
   strategy:
     matrix:
