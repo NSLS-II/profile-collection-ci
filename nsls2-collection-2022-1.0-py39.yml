@@ -36,7 +36,7 @@ jobs:
       #   PYTHON_VERSION: 3.7
 
   steps:
-
+    - shell: echo {{ parameters.mxtools_branch }}
     # Check the env
     - template: .azure-templates/check-env.yml
 
