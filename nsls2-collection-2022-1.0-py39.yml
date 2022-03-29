@@ -1,5 +1,3 @@
-name: run_profile_collection_2022_1_0_py39_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
-
 jobs:
 # Docs: https://docs.microsoft.com/en-us/azure/devops/pipelines/process/run-number?view=azure-devops&tabs=yaml
 - job:
