@@ -1,5 +1,6 @@
 jobs:
-- job: run_profile_collection_2022_1_0_py39
+# Docs: https://docs.microsoft.com/en-us/azure/devops/pipelines/process/run-number?view=azure-devops&tabs=yaml
+- job: run_profile_collection_2022_1_0_py39_$(Rev:r)
 
   pool:
     vmImage: 'ubuntu-latest'
