@@ -4,7 +4,7 @@ steps:
       set -vxeuo pipefail
       source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       url="https://zenodo.org/record/${ZENODO_ID}/files/${CONDA_ENV_NAME}.tar.gz?download=1"
-      wget -q ${url} -O ${CONDA_ENV_NAME}.tar.gz
+      wget --progress=dot:giga ${url} -O ${CONDA_ENV_NAME}.tar.gz
       status=$?
       if [ $status -gt 0 ]; then
           echo "Cannot download from ${url}. Exit code: ${status}"
