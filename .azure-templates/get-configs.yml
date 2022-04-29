@@ -1,11 +1,50 @@
 # Get pyOlog and databroker configs
 steps:
   - script: |
-      set -e
-      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/pyOlog.conf -O ~/pyOlog.conf
+      set -vxeuo pipefail
 
-      mkdir -v -p ~/.config/databroker/
-      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml -O ~/.config/databroker/_legacy_config.yml
-      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml -O ~/.config/databroker/$(echo ${BEAMLINE_ACRONYM} | awk '{print tolower($1)}').yml
+      # pyOlog config:
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/pyOlog.conf -O $HOME/.pyOlog.conf
+      cat $HOME/.pyOlog.conf
+
+      # Classic databroker v0/v1 config:
+      databroker_conf_dir="$HOME/.config/databroker"
+      databroker_bl_conf="$(echo ${BEAMLINE_ACRONYM} | awk '{print tolower($1)}').yml"
+      mkdir -v -p ${databroker_conf_dir}
+      wget https://raw.githubusercontent.com/NSLS-II/profile-collection-ci/master/configs/databroker.yml -O ${databroker_conf_dir}/_legacy_config.yml
+      cp -v ${databroker_conf_dir}/_legacy_config.yml ${databroker_conf_dir}/${databroker_bl_conf}
+      cat ${databroker_conf_dir}/_legacy_config.yml
+      cat ${databroker_conf_dir}/${databroker_bl_conf}
+
+      # Tiled profile config:
+      tiled_profiles_dir="$HOME/.config/tiled/profiles/"
+      mkdir -v -p ${tiled_profiles_dir}
+      cat << EOF > ${tiled_profiles_dir}/profiles.yml
+      ${BEAMLINE_ACRONYM:-local}:
+        direct:
+          authentication:
+            allow_anonymous_access: true
+          trees:
+          - tree: databroker.mongo_normalized:Tree.from_uri
+            path: /
+            args:
+              uri: mongodb://localhost:27017/metadatastore-local
+              asset_registry_uri: mongodb://localhost:27017/asset-registry-local
+      EOF
+      cat ${tiled_profiles_dir}/profiles.yml
+
+      # Kafka config:
+      cat << EOF > kafka.yml
+      ---
+        abort_run_on_kafka_exception: false
+        bootstrap_servers:
+          - localhost:9092
+        runengine_producer_config:
+      EOF
+
+      sudo mkdir -v -p /etc/bluesky/
+      sudo mv -v kafka.yml /etc/bluesky/kafka.yml
+      cat /etc/bluesky/kafka.yml
+
     displayName: "* get pyOlog and databroker configs"
     condition: succeeded()
