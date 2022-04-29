@@ -46,5 +46,5 @@ steps:
       sudo mv -v kafka.yml /etc/bluesky/kafka.yml
       cat /etc/bluesky/kafka.yml
 
-    displayName: "* get pyOlog and databroker configs"
+    displayName: "* get configs (pyOlog, databroker, tiled, kafka)"
     condition: succeeded()
