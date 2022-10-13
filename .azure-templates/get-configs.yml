@@ -41,6 +41,7 @@ steps:
         bootstrap_servers:
           - localhost:9092
         runengine_producer_config:
+          security.protocol: PLAINTEXT
       EOF
 
       sudo mkdir -v -p /etc/bluesky/
