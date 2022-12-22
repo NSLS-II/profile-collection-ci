@@ -54,6 +54,9 @@ jobs:
     # Install system packages
     - template: .azure-templates/install-system-packages.yml
 
+    # Check services and system packages
+    - template: .azure-templates/check-services-and-pkgs.yml
+
     # Start mongodb service
     - template: .azure-templates/start-mongo.yml
 
