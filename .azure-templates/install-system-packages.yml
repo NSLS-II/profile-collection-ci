@@ -1,9 +1,20 @@
 # Install required packages
 steps:
   - script: |
+      # For reference: https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html.
+      set -vxeuo pipefail
+
+      # Prepare for mongodb installation:
+      sudo apt-get update
+      sudo apt-get install -y lsb-release
+      wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+      echo "deb [ arch=$(dpkg --print-architecture) ] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+
+      # Install the required packages:
       sudo apt-get clean
       sudo apt-get update
       # sudo apt-get install xvfb
-      sudo apt-get install redis
+      sudo apt-get install -y redis
+      sudo apt-get install -y mongodb-org
     displayName: "* install required packages"
     condition: succeeded()

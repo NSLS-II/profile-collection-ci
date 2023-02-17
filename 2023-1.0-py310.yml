@@ -1,0 +1,82 @@
+jobs:
+- job: run_profile_collection_2023_1_0_py310
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  displayName: "${{ parameters.beamline_acronym }}:"
+
+  variables:
+    - template: .azure-templates/common-vars.yml
+    - name: BEAMLINE_ACRONYM
+      value: ${{ parameters.beamline_acronym }}
+    - name: CAPROTO_COMMAND
+      value: "python -m caproto.ioc_examples.pathological.spoof_beamline"
+    - name: CONDA_ENV_NAME
+      value: 2023-1.0-py310
+    # DOI: https://doi.org/10.5281/zenodo.7470912
+    # URL: https://zenodo.org/record/7470912/files/2023-1.0-py310.tar.gz?download=1
+    - name: ZENODO_ID
+      value: 7470912
+    - name: MD5_CHECKSUM
+      value: 2c93e892a55d8c684acea4ccb2680ac5
+
+  strategy:
+    matrix:
+      2023_1_0_py310:
+        OPHYD_CONTROL_LAYER: pyepics
+        CONDA_CHANNEL_NAME: conda-forge
+        PYTHON_VERSION: 3.10
+      # Commenting out caproto OPHYD_CONTROL_LAYER test due to
+      # https://github.com/caproto/caproto/issues/696.
+      # py37_caproto:
+      #   OPHYD_CONTROL_LAYER: caproto
+      #   CONDA_CHANNEL_NAME: nsls2forge
+      #   PYTHON_VERSION: 3.7
+
+  steps:
+
+    # Check the env
+    - template: .azure-templates/check-env.yml
+
+    # TODO: uncomment the block below once all profile repos are
+    # "profile_collection". Some of them are not compliant with the name and
+    # single profile per repo approach. See the list of those below.
+    # # Check the startup/ dir exists
+    # - template: .azure-templates/check-startup-dir-exists.yml
+
+    # Get pyOlog and databroker configs
+    - template: .azure-templates/get-configs.yml
+
+    # Prepare a test profile dir
+    - template: .azure-templates/prepare-test-profile-dir.yml
+
+    # Install system packages
+    - template: .azure-templates/install-system-packages.yml
+
+    # Start mongodb service
+    - template: .azure-templates/start-mongo.yml
+
+    # Start redis service
+    - template: .azure-templates/start-redis.yml
+
+    # Start docker service
+    # - template: .azure-templates/start-docker.yml
+
+    # Check services and system packages
+    - template: .azure-templates/check-services-and-pkgs.yml
+
+    # Download and install miniconda
+    - template: .azure-templates/install-miniconda.yml
+
+    # Create conda env
+    - template: .azure-templates/create-conda-env-archive.yml
+
+    # Perform beamline-specific actions
+    - template: .azure-templates/bl-specific.yml
+
+    # Start caproto IOC and start IPython with startup files
+    - template: .azure-templates/run-tests.yml
+
+    # Display bluesky logs
+    - template: .azure-templates/display-bluesky-logs.yml
