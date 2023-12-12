@@ -1,7 +1,7 @@
 # Create conda env from archive
 steps:
   - script: |
-      set -vxeuo pipefail
+      set -vxeo pipefail
       source $HOME/miniconda/etc/profile.d/conda.sh  # this makes all conda vars available
       url="https://zenodo.org/record/${ZENODO_ID}/files/${CONDA_ENV_NAME}.tar.gz?download=1"
       wget --progress=dot:giga ${url} -O ${CONDA_ENV_NAME}.tar.gz
